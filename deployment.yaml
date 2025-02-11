@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-node-app
+spec:
+  replicas: 02
+  selector:
+    matchLabels:
+      app: my-node-app
+  template:
+    metadata:
+      labels:
+        app: my-node-app
+    spec:
+      containers:
+      - name: my-node-app
+        image: shivamchavan01/db-demo-app:024
+        env: 
+        - name: mongoHost
+          valueFrom:
+            configMapKeyRef:
+              name:  mongo-config
+              key: mongoHost
+
+        - name: mongoPort
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongoPort
+
+       
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service-node-app
+spec:
+  
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 3000
+  selector:
+    app: my-node-app 
+  type: LoadBalancer
+
