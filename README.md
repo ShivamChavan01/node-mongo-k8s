@@ -27,6 +27,8 @@ node-mongo-k8s/
 │── Dockerfile    # Container image instructions
 │── deployment.yaml  # Kubernetes deployment and service config
 │── configmap.yaml  # MongoDB configuration variables
+│── pv.yaml  # Persistent Volume configuration
+│── pvc.yaml  # Persistent Volume Claim configuration
 │── README.md  # Project documentation
 ```
 
@@ -60,6 +62,48 @@ Apply the ConfigMap:
 kubectl apply -f configmap.yaml
 ```
 
+#### Create Persistent Volume and Persistent Volume Claim
+**Persistent Volume (PV)**:
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/
+    type: DirectoryOrCreate
+```
+Apply the PV:
+```sh
+kubectl apply -f pv.yaml
+```
+
+**Persistent Volume Claim (PVC)**:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: host-pvc
+spec:
+  volumeName: host-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ""
+```
+Apply the PVC:
+```sh
+kubectl apply -f pvc.yaml
+```
+
 #### Apply Deployment and Service
 ```sh
 kubectl apply -f deployment.yaml
@@ -69,6 +113,7 @@ kubectl apply -f deployment.yaml
 ```sh
 kubectl get pods
 kubectl get services
+kubectl get pv,pvc  # Check if the PVC is bound to the PV
 ```
 
 ### 4️⃣ Access the Application
@@ -81,12 +126,9 @@ Otherwise, find the external IP:
 kubectl get services my-service-node-app
 ```
 
-
 ## Troubleshooting
 - **Pod CrashLoopBackOff**: Check logs with `kubectl logs <pod-name>`
 - **Service Not Accessible**: Ensure proper port mapping in `deployment.yaml`
+- **Persistent Volume Not Bound**: Check PVC status with `kubectl describe pvc host-pvc`
 - **Git Push Rejected**: Use `git pull --rebase origin main` before pushing
-
----
-
 
