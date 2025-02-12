@@ -9,7 +9,7 @@ const mongoHost = process.env.MONGO_HOST || "localhost";
 const mongoPort = process.env.MONGO_PORT || '27017';
 
 
-mongoose.connect(`mongodb://${mongoHost}:${mongoPort}/yourDatabaseName`, {
+mongoose.connect(`mongodb://localhost:27017/yourDatabaseName`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });

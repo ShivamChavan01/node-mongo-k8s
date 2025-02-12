@@ -14,7 +14,14 @@ spec:
       containers:
       - name: mongo-app
         image: mongo:latest
-        
+        volumeMounts:
+        - mountPath: /data/db 
+          name: mongo-vol
+      volumes:
+      - name: mongo-vol
+        persistentVolumeClaim:  # ✅ Fixed indentation
+          claimName: host-pvc  # ✅ Corrected indentation
+
 ---
 apiVersion: v1
 kind: Service
